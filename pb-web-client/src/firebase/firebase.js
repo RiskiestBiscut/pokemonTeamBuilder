@@ -6,7 +6,7 @@ import { getAuth } from "firebase/auth";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA9P3gmCxcrUxmlr_1ut71EjVIVklI0hRo",
+  apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
   authDomain: "pb-maker.firebaseapp.com",
   projectId: "pb-maker",
   storageBucket: "pb-maker.appspot.com",
