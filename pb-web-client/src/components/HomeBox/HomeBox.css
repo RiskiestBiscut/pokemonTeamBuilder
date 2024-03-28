@@ -1,0 +1,46 @@
+.blue {
+  fill: #addaee;
+}
+
+.red {
+  fill: #FFB444;
+}
+
+.green {
+  fill: #B2FFE2;
+}
+
+.cls2 {
+  fill: #f2f2f2;
+}
+
+.cls3 {
+  fill: #fff;
+}
+
+.box {
+  width: 30%;
+  height: auto;
+  filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+  
+}
+
+.box,
+.blue,
+.red,
+.green {
+  transition: all 0.5s ease;
+}
+
+.box:hover {
+  width: 35%;
+  height: auto;
+  transform: rotate(-20deg);
+
+}
+
+
+
+.box:hover .blue, .box:hover .red, .box:hover .green {
+  transform: translateY(-2.5rem);
+}
