@@ -1,1 +1,23 @@
-import * as functions from 
+import express from 'express'
+import cors from 'cors';
+
+const app = express();
+
+import { FBAuth } from './util/fbAuth.js';
+import { signup, login } from './handlers/users.js';
+import { addPokedex } from './handlers/pokedex.js';
+import * as functions from "firebase-functions";
+
+app.use(cors());
+
+// Pokemon
+app.post('/addPokedex', FBAuth, addPokedex);
+
+// Items/store
+
+// Auth routes
+app.post('/signup', signup)
+app.post('/login', login)
+
+
+export const api = functions.https.onRequest(app);

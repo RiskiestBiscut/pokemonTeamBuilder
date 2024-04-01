@@ -8,7 +8,7 @@ import {
 
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage/HomePage'
-import SignInPage from './pages/SignInPage/SignInPage'
+import LoginPage from './pages/LoginPage/LoginPage'
 import SignUpPage from './pages/SignUpPage/SignUpPage';
 
 
@@ -17,8 +17,7 @@ const router = createBrowserRouter(
   <Route path='/' element={<MainLayout />}>
     <Route index element={<HomePage />}/>
     <Route path='/signup' element={<SignUpPage />}/>
-    <Route path='/signin' element={<SignInPage />}/>
-    <Route path='*' element={<SignInPage />}/>
+    <Route path='/login' element={<LoginPage />}/>
   </Route>
   )
 );

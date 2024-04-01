@@ -1,0 +1,17 @@
+{
+  "name": "pokeapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "pokeAPi.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/pokeAPi"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^10.10.0",
+    "firebase-admin": "^12.0.0",
+    "pokedex-promise-v2": "^4.2.0"
+  }
+}
