@@ -1,3 +1,5 @@
+import { adminFirebaseAuth, firestore } from "./admin.js";
+
 export const FBAuth = (req, res, next) => {
   let idToken;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
@@ -9,13 +11,21 @@ export const FBAuth = (req, res, next) => {
 
   adminFirebaseAuth
   .verifyIdToken(idToken)
-    .then((decodedToken) => {
-      req.user = decodedToken;
-      console.log(decodedToken);
-      return next();
-    })
-    .catch((err) => {
-      console.error('Error while verifying token.')
-      return res.status(403).json(err);
-    });
+  .then((decodedToken) => {
+    req.user = decodedToken;
+    return firestore
+      .collection('users')
+      .where('userId', '==', req.user.uid)
+      .limit(1)
+      .get();
+  })
+  .then((data) => {
+    req.user.handle = data.docs[0].data().handle;
+    req.user.imageUrl = data.docs[0].data().imageUrl;
+    return next();
+  })
+  .catch((err) => {
+    console.error('Error while verifying token ', err);
+    return res.status(403).json(err);
+  });
 }

@@ -1,9 +1,11 @@
 import Login from "../../components/auth/Login/Login"
+import { Navigate } from "react-router-dom"
 
 
-const LoginPage = () => {
+const LoginPage = ({authenticated}) => {
   return (
-    <Login />
+    authenticated === true ? <Navigate to="/" /> : <Login />
+    
   )
 }
 

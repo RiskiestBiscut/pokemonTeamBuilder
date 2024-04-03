@@ -12,7 +12,7 @@ const firebase = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(firebase);
 
 export const signup = (req, res) => {
-  const userObj = JSON.parse(req.body);
+  const userObj = req.body;
   const newUser = {
     email: userObj.email,
     password: userObj.password,
@@ -63,18 +63,14 @@ export const signup = (req, res) => {
 }
 
 export const login = async (req, res) => {
-  const userObj =  JSON.parse(req.body);
+  const userObj =  req.body;
   const user = {
     email: userObj.email,
     password: userObj.password
   }
-  console.log(user);
-
   const { valid, errors } = validateLoginData(user);
-  console.log('validated users')
 
   if (!valid) return res.status(400).json(errors);
-  console.log('returns errors');
 
   signInWithEmailAndPassword(firebaseAuth, user.email, user.password)
     .then(data => {
@@ -87,8 +83,8 @@ export const login = async (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      if (err.code === "auth/invalid-credential") {
-        return res.status(403).json("invalid email or password.")
+      if (err.code === "auth/invalid-credential" || err.code === "auth/invalid-email" ) {
+        return res.status(403).json({general: "invalid email or password."})
       } else {
         return res.status(500).json({ error: err.code });
       }
