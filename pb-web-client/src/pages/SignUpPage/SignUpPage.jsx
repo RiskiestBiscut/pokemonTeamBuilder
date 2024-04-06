@@ -1,9 +1,13 @@
 import SignUp from "../../components/auth/SignUp/SignUp"
 import Header from "../../components/auth/Header/Header"
 import { Navigate } from "react-router-dom"
+import { useSelector } from 'react-redux'
 
 
-const SignUpPage = ({authenticated}) => {
+const SignUpPage = () => {
+
+  const { authenticated } = useSelector(state => state.user)
+
   return (
     authenticated === true ? <Navigate to="/" /> :
       <>

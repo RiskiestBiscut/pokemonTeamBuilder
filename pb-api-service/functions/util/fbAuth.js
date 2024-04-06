@@ -18,10 +18,10 @@ export const FBAuth = (req, res, next) => {
       .where('userId', '==', req.user.uid)
       .limit(1)
       .get();
+
   })
   .then((data) => {
-    req.user.handle = data.docs[0].data().handle;
-    req.user.imageUrl = data.docs[0].data().imageUrl;
+    req.user.username = data.docs[0].data().username;
     return next();
   })
   .catch((err) => {

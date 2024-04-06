@@ -1,19 +1,20 @@
 import { configureStore, combineReducers} from '@reduxjs/toolkit';
 
 import userReducer from './reducers/userReducer';
-import dataReducer from './reducers/dataReducer';
+// import dataReducer from './reducers/dataReducer';
 import uiReducer from './reducers/uiReducer';
 
 const initialState = {};
 
 const reducers = combineReducers({
   user: userReducer,
-  data: dataReducer,
-  UI: uiReducer
+  UI: uiReducer,
+  // data: dataReducer,
+  
 })
 
-const store = configureStore({
-  reducers,
+export const store = configureStore({
+  reducer: reducers,
   initialState,
     
   })

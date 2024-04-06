@@ -1,21 +1,29 @@
-import { useState } from "react"
-import axios from 'axios';
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+import { connect } from "react-redux";
+import { loginUser } from "../../../redux/actions/userActions";
+
+
+
+
+const Login = ({ UI, loginUser}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const loading = UI.loading;
 
+  useEffect(() => {
+    if (UI.errors) {
+      setErrors(UI.errors);
+    }
+    console.log(errors)
+  }, [UI.errors])
+  
 
-
-  const signIn = async (e) => {
+  const signIn = (e) => {
     e.preventDefault();
-    setLoading(true);
-    
-
     const userData = {
       email: email,
       password: password
@@ -27,23 +35,13 @@ const Login = () => {
         "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
       }
     };
-
-    try {
-      const {data} = await axios.post('http://localhost:5000/pb-maker/us-central1/api/login', userData, config)
-      localStorage.setItem('FBIdToken', `Bearer ${data.token}`)
-      setLoading(false);
-      console.log(data)
-      navigate("/");
-    } catch (err) {
-      setErrors(err.response.data)
-      console.log(err)
-      setLoading(false)
-    }
     
+    loginUser(userData, config, navigate);
   };
 
 
   return (
+    
     <>
 <main>
   <div className="max-w-sm rounded overflow-hidden shadow-lg px-16">
@@ -101,4 +99,15 @@ const Login = () => {
   );
 }
 
-export default Login
+
+
+const mapStateToProps = (state) => ({
+  user: state.user,
+  UI: state.UI
+})
+
+const mapActionsToProps = {
+  loginUser
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(Login)

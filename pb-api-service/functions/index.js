@@ -4,8 +4,8 @@ import cors from 'cors';
 const app = express();
 
 import { FBAuth } from './util/fbAuth.js';
-import { signup, login } from './handlers/users.js';
-import { addPokedex } from './handlers/pokedex.js';
+import { signup, login, getAuthenticatedUser } from './handlers/users.js';
+import { addPokedex, getFirstPokemon } from './handlers/pokedex.js';
 import * as functions from "firebase-functions";
 
 const corsOptions ={
@@ -18,8 +18,13 @@ app.use(cors(corsOptions));
 
 // Pokemon
 app.post('/addPokedex', FBAuth, addPokedex);
+app.get('/getFirstPokemon', FBAuth, getFirstPokemon);
 
 // Items/store
+
+
+//users
+app.get('/user', FBAuth, getAuthenticatedUser)
 
 // Auth routes
 app.post('/signup', signup)

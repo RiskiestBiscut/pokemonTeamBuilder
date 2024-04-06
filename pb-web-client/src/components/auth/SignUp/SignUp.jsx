@@ -1,21 +1,31 @@
-import { useState } from "react"
-import axios from "axios";
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 
+import { connect } from 'react-redux'
+import { signupUser } from "../../../redux/actions/userActions";
 
-const SignUp = () => {
+
+const SignUp = ({ UI, signupUser}) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const loading = UI.loading;
+
+  useEffect(() => {
+    if (UI.errors) {
+      setErrors(UI.errors);
+    }
+    console.log(errors)
+  }, [UI.errors])
+  
+
 
   const signUp = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     const newUserData = {
       email: email,
@@ -31,17 +41,7 @@ const SignUp = () => {
       }
     };
 
-    try {
-      const {data} = await axios.post('http://localhost:5000/pb-maker/us-central1/api/signup', newUserData, config)
-      localStorage.setItem('FBIdToken', `Bearer ${data.token}`)
-      setLoading(false);
-      console.log(data)
-      navigate("/");
-    } catch (err) {
-      setErrors(err.response.data)
-      console.log(err)
-      setLoading(false)
-    }
+    signupUser(newUserData, config, navigate);
   }
 
 
@@ -120,8 +120,10 @@ const SignUp = () => {
         </div>
     </div>
   </div>
+  {errors.general && <span className="text-red-500 text-xs">{errors.general}</span>}
   <div className="mt-6 flex items-center justify-center gap-x-6">
-    <button type="submit"  className="rounded-md bg-indigo-600 px-10 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign Up</button>
+    {!loading && <button type="submit"  className="rounded-md bg-indigo-600 px-10 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign Up</button>}
+    {loading && <button className="rounded-md bg-indigo-600 px-10 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Signing Up...</button>}
   </div>
 </form>
   </div>
@@ -132,4 +134,9 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+const mapStateToProps = (state) => ({
+  user: state.user,
+  UI: state.UI
+})
+
+export default connect(mapStateToProps, { signupUser })(SignUp)

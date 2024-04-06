@@ -91,3 +91,20 @@ export const login = async (req, res) => {
       
     })
 }
+
+export const getAuthenticatedUser = async (req, res) => {
+  let userData = {};
+  const userDoc = firestore.collection('users').doc(`${req.user.username}`);
+  const doc = await userDoc.get();
+  console.log(doc.exists);
+  try {
+    if (doc.exists) {
+      userData.credentials = doc.data();
+      console.log(userData)
+    }
+    return res.json(userData);
+  } catch (err) {
+    console.error(err);
+      return res.status(500).json({ error: err.code });
+  }
+};
