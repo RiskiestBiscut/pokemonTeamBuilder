@@ -6,18 +6,32 @@ import { useState } from "react";
 import FirstPokemonPopUp from "../FirstPokemonPopup/FirstPokemonPopUp";
 
 
-const NewUserPopup = ({buttonPopup, setButtonPopup, newUser, setNewUser}) => {
+const NewUserPopup = ({ newUser, buttonPopup, setButtonPopup}) => {
   const [type, setType] = useState('');
   const [newUserPopup, setNewUserPopup] = useState(true)
   const [pop, setPop] = useState(false);
+  const [pokeData, setPokeData] = useState({
+    pokemon: null
+  })
   
+  const getFirstPokemon = async () => {
+    const {data} = await axios.get('http://localhost:5000/pb-maker/us-central1/api/getBattleParty');
+    console.log(data)
+    try {
+      setPokeData({
+        pokemon: data
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const createPokdex = async () => {
     const pokeType = {
       type: type
-    }
+    } 
 
-    console.log(pokeType);
+    
     setNewUserPopup(false)
     setPop(true);
 
@@ -30,8 +44,7 @@ const NewUserPopup = ({buttonPopup, setButtonPopup, newUser, setNewUser}) => {
 
     try {
       const {data} = await axios.post('http://localhost:5000/pb-maker/us-central1/api/addPokedex', pokeType, config)
-      console.log(data)
-
+      await getFirstPokemon()
     } catch (err) {
       console.log(err)
     }
@@ -53,7 +66,7 @@ const NewUserPopup = ({buttonPopup, setButtonPopup, newUser, setNewUser}) => {
         </HomeBoxPopUp>
       </div>
     </div>
-  ) : <FirstPokemonPopUp newUser={newUser} setNewUser={setNewUser} pop={pop} setPop={setPop} />
+  ) : <FirstPokemonPopUp newUser={newUser} pop={pop} setPop={setPop} pokeData={pokeData} />
 }
 
 export default NewUserPopup

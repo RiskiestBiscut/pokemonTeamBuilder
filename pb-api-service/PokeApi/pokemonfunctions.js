@@ -22,14 +22,17 @@ export const chooseStarter = async (type) => {
   const attack = Math.floor(Math.random()*5 + 3)
   const defense = Math.floor(Math.random()*5 + 3)
   const health = Math.floor(Math.random()*5 + 14)
+  console.log(choose)
 
   try {
     const pokemon = await P.getPokemonByName(typeArray[choose])
+    console.log(pokemon)
     const pokemonData = {
       name: pokemon.name,
       number: pokemon.id,
       image: pokemon.sprites.front_default,
       createdAt: new Date().toISOString(),
+      types: pokemon.types,
       stats: {
         ATK: attack,
         DEF: defense,
@@ -41,4 +44,35 @@ export const chooseStarter = async (type) => {
   } catch (err) {
     console.log(`there was an error: ${err}.`)
   }
+}
+
+export const addNewFirstGenPokemon = async () => {
+  const choose = Math.floor(Math.random()*151)
+  const attack = Math.floor(Math.random()*5 + 3)
+  const defense = Math.floor(Math.random()*5 + 3)
+  const health = Math.floor(Math.random()*5 + 14)
+
+  try {
+    const pokemon = await P.getResource(`api/v2/pokemon/${choose}`)
+
+  
+    const pokemonData = {
+      name: pokemon.name,
+      number: pokemon.id,
+      image: pokemon.sprites.front_default,
+      createdAt: new Date().toISOString(),
+      types: pokemon.types,
+      stats: {
+        ATK: attack,
+        DEF: defense,
+        HP: health
+      }
+    }
+    console.log(pokemonData);
+    return pokemonData;
+  } catch (err) {
+    console.log(`there was an error: ${err}.`)
+    return err
+  }
+
 }

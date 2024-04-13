@@ -4,9 +4,10 @@ import cors from 'cors';
 const app = express();
 
 import { FBAuth } from './util/fbAuth.js';
-import { signup, login, getAuthenticatedUser } from './handlers/users.js';
-import { addPokedex, getFirstPokemon } from './handlers/pokedex.js';
+import { signup, login, getAuthenticatedUser, updateNewUserDetails } from './handlers/users.js';
+import { addPokedex, addNewPokemon, getAllPokedex, getBattleParty } from './handlers/pokedex.js';
 import * as functions from "firebase-functions";
+
 
 const corsOptions ={
   origin:'http://localhost:5173', 
@@ -18,13 +19,16 @@ app.use(cors(corsOptions));
 
 // Pokemon
 app.post('/addPokedex', FBAuth, addPokedex);
-app.get('/getFirstPokemon', FBAuth, getFirstPokemon);
+app.get('/getBattleParty', FBAuth, getBattleParty);
+app.post('/addNewPokemon', FBAuth, addNewPokemon);
+app.get('/getAllPokedex', FBAuth, getAllPokedex);
 
 // Items/store
 
 
 //users
 app.get('/user', FBAuth, getAuthenticatedUser)
+app.put('/user', FBAuth, updateNewUserDetails)
 
 // Auth routes
 app.post('/signup', signup)

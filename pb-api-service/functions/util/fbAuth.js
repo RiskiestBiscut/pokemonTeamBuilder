@@ -18,7 +18,6 @@ export const FBAuth = (req, res, next) => {
       .where('userId', '==', req.user.uid)
       .limit(1)
       .get();
-
   })
   .then((data) => {
     req.user.username = data.docs[0].data().username;

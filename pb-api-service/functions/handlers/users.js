@@ -44,7 +44,8 @@ export const signup = (req, res) => {
         username: newUser.username,
         email: newUser.email,
         createdAt: new Date().toISOString(),
-        userId
+        userId,
+        newUser: true
       };
       return firestore.collection('users').doc(`${newUser.username}`).set(userCredentials);
     })
@@ -108,3 +109,16 @@ export const getAuthenticatedUser = async (req, res) => {
       return res.status(500).json({ error: err.code });
   }
 };
+
+export const updateNewUserDetails = async (req, res) => {
+  const doc = firestore.collection('users').doc(`${req.user.username}`);
+  try {
+    const updateUser = await doc.update({newUser: false});
+    const userData = await doc.get();
+    console.log(userData.data());
+    return res.json(userData.data())
+  } catch (err) {
+    console.log(err)
+  }
+  
+}

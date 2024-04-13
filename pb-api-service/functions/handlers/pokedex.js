@@ -1,22 +1,40 @@
+import { FieldValue } from '@google-cloud/firestore'
 import { firestore } from "../util/admin.js";
-import { chooseStarter } from "../../PokeApi/starters.js";
+import { chooseStarter, addNewFirstGenPokemon } from "../../PokeApi/pokemonfunctions.js";
 
+
+// add a new pokedex and battle party collection and tie to current user.
 export const addPokedex = async (req, res) => {
 
   const pokemon = await chooseStarter(req.body.type);
-  const userDoc = firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`);
-  const checkDoc = await userDoc.get();
+
+  const pokedexDoc = firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`);
+  const battlePartyDoc = firestore.collection('battleParties').doc(`battleParty-${req.user.uid}`);
+  const checkPokedexDoc = await pokedexDoc.get();
+  const checkBattlePartyDoc = await battlePartyDoc.get();
 
 
   try {
-    if (checkDoc.exists) {
+    if (checkPokedexDoc.exists) {
      throw new Error('A Pokedex already exist for this user')
     }
+
+    if (checkBattlePartyDoc.exists) {
+      throw new Error('A Battle Party already exist for this user')
+     }
+
 
     const newPokedexEntry = {
       pokedexId: `pokedex-${req.user.uid}`,
       userId: req.user.uid,
       createdAt: new Date().toISOString()
+    }
+
+    const newBattlePartyEntry = {
+      battlePartyId: `battleParty-${req.user.uid}`,
+      userId: req.user.uid,
+      createdAt: new Date().toISOString(),
+      currentParty: [pokemon]
     }
 
     firestore.collection('pokedexes')
@@ -29,28 +47,74 @@ export const addPokedex = async (req, res) => {
       .doc(`${pokemon.name}`)
       .set(pokemon)
 
-    return res.json({message: `document ${newPokedexEntry.pokedexId} created succesfully.`})
+      firestore.collection('battleParties')
+        .doc(`battleParty-${req.user.uid}`)
+        .set(newBattlePartyEntry)
+
+    return res.json({message: `document ${newPokedexEntry.pokedexId} and ${newBattlePartyEntry.battlePartyId} created succesfully.`})
   } catch (err) {
     console.error(err)
     return res.status(500).json({error: err})
   }  
 }
 
-export const getFirstPokemon = async (req, res) => {
 
-let firstPokemon = {};
-const newPokedex = firestore.collection("pokedexes").doc(`pokedex-${req.user.uid}`).collection('pokemon');
-console.log(newPokedex);
-const firstPokemonSnapshot = await newPokedex.orderBy('createdAt', "desc").limit(1).get();
-console.log(firstPokemonSnapshot.docs[0]);
+// get all the info of the users current battle party
+export const getBattleParty = async (req, res) => {
+let battlePartyPokemon = {};
+const battleParty = firestore.collection("battleParties").doc(`battleParty-${req.user.uid}`)
+console.log(battleParty);
+const battlePartySnapshot = await battleParty.get();
+
 try {
-  if (!firstPokemonSnapshot.empty) {
-    console.log(firstPokemonSnapshot.docs[0])
-    firstPokemon = firstPokemonSnapshot.docs[0].data();
+  if (battlePartySnapshot.exists) {
+    battlePartyPokemon = battlePartySnapshot.data();
   }
-  return res.json(firstPokemon)
+  return res.status(200).json(battlePartyPokemon)
 } catch (err) {
   console.error(err)
   return res.status(500).json({error: err})
 }
+}
+
+
+// add a new pokemon to a users pokedex
+export const addNewPokemon = async (req, res) => {
+  const pokemon = await addNewFirstGenPokemon();
+  console.log(pokemon);
+  const pokemonDoc = firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`).collection('pokemon').doc(`${pokemon.name}`);
+  const battlePartyDoc = firestore.collection('battleParties').doc(`battleParty-${req.user.uid}`)
+  const checkPokemonDoc = await pokemonDoc.get();
+  const checkBattlePartyDoc = await battlePartyDoc.get();
+
+  try {
+    if (checkPokemonDoc.exists) {
+      throw new Error('This user already has this pokemon.')
+    }
+    pokemonDoc.set(pokemon);
+    if (checkBattlePartyDoc.data().currentParty.length < 6) {
+      const userBattleParty = firestore.collection('battleParties').doc(`battleParty-${req.user.uid}`);
+      await userBattleParty.update({
+        currentParty: FieldValue.arrayUnion(pokemon)
+      });
+    }
+    console.log(pokemon);
+    return res.json({message: `document ${pokemon.name} created succesfully.`})
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({error: err})
+  }
+}
+
+
+ // get all pokemon in a users pokedex
+export const getAllPokedex = async (req, res) => {
+
+  try {
+    const snapshot = await firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`).collection('pokemon').get()
+    return snapshot.docs.map(doc => doc.data());
+  } catch (err) {
+    return res.status(500).json({error: err})
+  }
+    
 }
