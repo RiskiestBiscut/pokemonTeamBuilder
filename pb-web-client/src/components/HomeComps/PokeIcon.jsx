@@ -1,7 +1,7 @@
 const PokeIcon = ({ buttonClick, title }) => {
   return (
-    <>
-      <h2>{title}</h2>
+    <div>
+      <h2 className="text-center text-2xl">{title}</h2>
       <button onClick={buttonClick}>
         <svg className="box" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 540">
           <path d="M455,131.25v127.19h-124.72c-5.47-28.22-30.33-49.53-60.15-49.53s-54.68,21.31-60.15,49.53h-124.98v-127.19c0-25.54,20.71-46.25,46.25-46.25h277.5c25.54,0,46.25,20.71,46.25,46.25Z"/>
@@ -9,7 +9,7 @@ const PokeIcon = ({ buttonClick, title }) => {
           <circle className="cls2" cx="270" cy="270" r="43.94"/>
         </svg>
       </button>
-    </>
+    </div>
   )
 }
 

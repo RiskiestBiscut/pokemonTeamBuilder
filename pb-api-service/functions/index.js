@@ -5,7 +5,7 @@ const app = express();
 
 import { FBAuth } from './util/fbAuth.js';
 import { signup, login, getAuthenticatedUser, updateNewUserDetails } from './handlers/users.js';
-import { addPokedex, addNewPokemon, getAllPokedex, getBattleParty } from './handlers/pokedex.js';
+import { addPokedex, addNewPokemon, getAllPokedex, getBattleParty, updateBattleParty, getSinglePokemonByName } from './handlers/pokedex.js';
 import * as functions from "firebase-functions";
 
 
@@ -22,6 +22,8 @@ app.post('/addPokedex', FBAuth, addPokedex);
 app.get('/getBattleParty', FBAuth, getBattleParty);
 app.post('/addNewPokemon', FBAuth, addNewPokemon);
 app.get('/getAllPokedex', FBAuth, getAllPokedex);
+app.post('/updateBattleParty', FBAuth, updateBattleParty)
+app.get('/getSinglePokemonByName', FBAuth, getSinglePokemonByName)
 
 // Items/store
 

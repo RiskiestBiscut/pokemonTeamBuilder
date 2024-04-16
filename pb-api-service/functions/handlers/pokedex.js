@@ -111,10 +111,52 @@ export const addNewPokemon = async (req, res) => {
 export const getAllPokedex = async (req, res) => {
 
   try {
-    const snapshot = await firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`).collection('pokemon').get()
-    return snapshot.docs.map(doc => doc.data());
+
+    const pokedexRef = firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`).collection('pokemon');
+    const snapshot = await pokedexRef.get();
+    snapshot.forEach(doc => {
+      console.log(doc.id, '=>', doc.data());
+    });
+    const value = snapshot.docs.map(doc => doc.data());
+    return res.status(200).json({value})
   } catch (err) {
     return res.status(500).json({error: err})
   }
     
+}
+
+export const updateBattleParty = async (req, res) => {
+  const newPokemonDoc = firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`).collection('pokemon').doc(`${req.body.newName}`)
+  const oldPokemonDoc = firestore.collection('pokedexes').doc(`pokedex-${req.user.uid}`).collection('pokemon').doc(`${req.body.oldName}`)
+
+  const newPokemonSnapshot = await newPokemonDoc.get();
+  const oldPokemonSnapshot = await oldPokemonDoc.get();
+
+  const newPokemon = await newPokemonSnapshot.data();
+  const oldPokemon = await oldPokemonSnapshot.data();
+
+  try {
+      const userBattleParty = firestore.collection('battleParties').doc(`battleParty-${req.user.uid}`);
+      await userBattleParty.update({
+        currentParty: FieldValue.arrayRemove(oldPokemon)
+      });
+      await userBattleParty.update({
+        currentParty: FieldValue.arrayUnion(newPokemon)
+      });
+    return res.status(200).json("good")
+  } catch (err) {
+    console.log(err)
+  }
+
+}
+
+export const getSinglePokemonByName = async (req, res) => {
+
+  console.log(req.query.name);
+
+  try {
+    return res.status(200).json('working')
+  } catch (err) {
+    console.log(err)
+  }
 }
